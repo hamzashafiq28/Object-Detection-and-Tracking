@@ -1,0 +1,7 @@
+input_video_examples
+.venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+yolo12n.pt
