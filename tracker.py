@@ -20,7 +20,8 @@ class HumanTracker:
                  device=None,
                  conf_threshold=0.3,
                  show_trajectories=True,
-                 trajectory_length=30):
+                 trajectory_length=30,
+                 imgsz=640):
         """
         Initialize the human tracking system
         
@@ -39,6 +40,7 @@ class HumanTracker:
         # Load YOLO model
         self.model = YOLO(model_path)
         self.conf_threshold = conf_threshold
+        self.imgsz = imgsz
         
         # Initialize tracker
         self.tracker_type = tracker_type.lower()
@@ -72,7 +74,8 @@ class HumanTracker:
             frame, 
             conf=self.conf_threshold, 
             classes=[0],  # Class 0 is person
-            verbose=False
+            verbose=False,
+            imgsz=self.imgsz 
         )
         
         # Get detections

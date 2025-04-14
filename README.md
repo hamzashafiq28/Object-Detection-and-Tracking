@@ -1,4 +1,3 @@
-
 # Human Tracker
 
 A modular human tracking system using multiple tracker types from BoxMOT.
@@ -9,6 +8,7 @@ A modular human tracking system using multiple tracker types from BoxMOT.
 - Optimized parameters for dancing scenarios with occlusions
 - Visualization of tracks and trajectories
 - Performance statistics
+- Mobile optimization with model export to various formats
 
 ## Installation Instructions
 
@@ -17,8 +17,8 @@ A modular human tracking system using multiple tracker types from BoxMOT.
 #### Clone the repository
 
 ```bash
-git clone <repo_url>
-cd <repo_folder>
+git clone https://github.com/hamzashafiq28/Object_Detection_and_Tracking.git
+cd Object_Detection_and_Tracking
 ```
 
 #### Create and activate a virtual environment
@@ -43,7 +43,7 @@ conda activate tracker_env
 pip install -r requirements.txt
 ```
 
-#### Download YOLOv8 model (if not downloaded automatically)
+#### Download YOLOv12 model (if not downloaded automatically)
 
 Make sure `yolo12n.pt` is available or specify your model path using the `--model` argument.
 
@@ -71,6 +71,16 @@ python track.py --video path/to/video.mp4
 | `--device`        | Device to use for inference (`cuda`, `cpu`)                                                 | `cuda`        |
 | `--no-show`       | Disable visualization during processing                                                     | `False`       |
 | `--no-trajectory` | Disable trajectory visualization                                                            | `False`       |
+
+### Mobile Optimization Arguments
+
+| Argument           | Description                                                   | Default           |
+|--------------------|---------------------------------------------------------------|-------------------|
+| `--optimize-mobile` | Optimize and export model for mobile devices                 | `False`           |
+| `--export-format`   | Export format (`onnx`, `tflite`, `coreml`, `torchscript`)   | `onnx`            |
+| `--int8`            | Use INT8 quantization for smaller model size                 | `False`           |
+| `--optimize-only`   | Only optimize/export model without running tracking          | `False`           |
+| `--export-path`     | Directory to save exported model                             | `mobile_models`   |
 
 ### Examples
 
@@ -110,6 +120,30 @@ python main.py --video path/to/video.mp4 --no-show
 python main.py --video path/to/video.mp4 --tracker bytetrack --no-trajectory
 ```
 
+- **Optimize model for mobile deployment (ONNX):**
+
+```bash
+python main.py --optimize-mobile --export-format onnx --optimize-only
+```
+
+- **Optimize model to TFLite format with INT8 quantization:**
+
+```bash
+python main.py --optimize-mobile --export-format tflite --int8 --optimize-only
+```
+
+- **Export to CoreML format for iOS deployment:**
+
+```bash
+python main.py --optimize-mobile --export-format coreml --optimize-only
+```
+
+- **Export model and run tracking with it:**
+
+```bash
+python main.py --video path/to/video.mp4 --optimize-mobile --tracker bytetrack
+```
+
 ## Performance Considerations
 
 - GPU acceleration is highly recommended for real-time performance.
@@ -117,6 +151,20 @@ python main.py --video path/to/video.mp4 --tracker bytetrack --no-trajectory
 - ByteTrack is the fastest tracker but may struggle with complex occlusions.
 - Disable trajectory visualization (`--no-trajectory`) for better performance on low-end devices.
 - Adjust confidence threshold based on scene complexity (lower for challenging scenes, higher for cleaner output).
+
+## Mobile Optimization
+
+The system supports exporting optimized models for mobile deployment:
+
+- **ONNX format**: Compatible with various frameworks and mobile inference engines
+- **TFLite format**: Optimized for TensorFlow Lite on Android devices
+- **CoreML format**: Native support for iOS devices
+- **TorchScript format**: For PyTorch Mobile deployment
+
+Optimization techniques include:
+- Reduced input resolution (320×320) for faster inference
+- INT8 quantization option for up to 70% smaller model size
+- Graph simplification for more efficient execution
 
 ## Requirements
 
@@ -126,6 +174,7 @@ python main.py --video path/to/video.mp4 --tracker bytetrack --no-trajectory
 - Ultralytics YOLO
 - OpenCV
 - CUDA-capable GPU (recommended)
+- ONNX, ONNX Runtime (for optimization)
 
 ## Troubleshooting
 
@@ -133,6 +182,5 @@ python main.py --video path/to/video.mp4 --tracker bytetrack --no-trajectory
 - **CUDA out of memory**: Try reducing batch size or switch to CPU mode with `--device cpu`.
 - **Slow performance**: Consider using ByteTrack tracker and disabling trajectory visualization.
 - **Detection issues**: Adjust the confidence threshold with `--conf` parameter (lower for more detections).
-
-
-
+- **Mobile model issues**: When using exported models, ensure image size is set to match the export size (320×320).
+- **Export errors**: Make sure required packages are installed (`pip install onnx onnxruntime`).
